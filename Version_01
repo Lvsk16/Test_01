@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cronómetros Debate TV Style 9 Candidatos</title>
+  <style>
+    body {
+      background: transparent;
+      font-family: 'REM Medium', 'REM ExtraBold', 'REM SemiBold', 'REM Black', 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .layout-flex {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: flex-start;
+      min-height: 100px;
+      width: 100vw;
+      box-sizing: border-box;
+    }
+    #panel-candidatos {
+      margin-top: 550px;
+      margin-left: 108px;
+      width: 395px;
+      min-width: 320px;
+      z-index: 2;
+    }
+    .lista-candidatos {
+      background: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      border: none;
+    }
+    .candidato {
+      display: flex;
+      align-items: center;
+      background: #0E2564;
+      border-radius: 0px;
+      margin-bottom: 5px;
+      min-height: 78px;
+      box-shadow: 0 2px 8px #0005;
+      border: 0px solid #d4d7e3;
+      overflow: hidden;
+      position: relative;
+      padding: 0;
+      /* For reorder animation */
+      transition: box-shadow 0.3s;
+      z-index: 1;
+    }
+    .candidato.moving {
+      z-index: 10;
+      box-shadow: 0 12px 32px #0007;
+    }
+    .candidato .foto {
+      min-width: 80px;
+      min-height: 70px;
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      background: #D1DDE8;
+      border-right: 0px solid #d4d7e3;
+      margin: 0;
+      border-radius: 0;
+    }
+    .datos-candidato {
+      flex: 1;
+      padding: 0 16px 0 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 78px;
+    }
+    .nombre-box {
+      margin-bottom: 2px;
+      margin-top: 2px;
+    }
+    .nombre-apellido {
+      color: #fff;
+      font-size: 1.22em;
+      letter-spacing: 0.7px;
+      line-height: 1.05;
+      text-shadow: 0 2px 4px #2224;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: -5px;
+      margin-top: 0px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nombre-apellido .nombre {
+      font-weight: 400;
+      font-family: 'Rem Light', 'Segoe UI', Arial, sans-serif;
+      margin-right: 2px;
+      letter-spacing: 0.7px;
+    }
+    .nombre-apellido .apellido {
+      font-weight: 700;
+      font-family: 'REM Black', 'Segoe UI', Arial, sans-serif;
+      letter-spacing: 0.7px;
+    }
+    .barra-tiempo-row {
+      display: flex;
+      align-items: center;
+      margin-top: 7px;
+    }
+    .display-tiempo {
+      font-size: 1.6em;
+      font-weight: 750;
+      color: #8AC2FF;
+      letter-spacing: 1px;
+      width: 75px;
+      text-align: left;
+      text-shadow: 0 2px 4px #2225;
+      background: none;
+      border: none;
+      margin-right: 8px;
+      margin-left: 0;
+      padding: 0;
+    }
+    .barra-tiempo {
+      flex: 1;
+      height: 16px;
+      background: #c9d5ee;
+      border-radius: 0px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+    }
+    .barra-azul {
+      height: 100%;
+      background: #8AC2FF;
+      border-radius: 0px 0 0 0px;
+      transition: width 0.6s cubic-bezier(.22,1,.36,1);
+      box-shadow: 0 1px 3px #0001;
+    }
+    .barra-gris {
+      height: 100%;
+      background: #3555A9;
+      border-radius: 0 0px 0px 0;
+      transition: width 0.6s cubic-bezier(.22,1,.36,1);
+      box-shadow: 0 1px 3px #0001;
+    }
+    #panel-controles {
+      position: fixed;
+      top: 60px;
+      right: 50px;
+      width: 700px;
+      background: #fff;
+      border-radius: 0px;
+      box-shadow: 0 2px 10px #0002;
+      border-top: 0px solid #13377c;
+      z-index: 10;
+      padding-bottom: 15px;
+      min-height: 120px;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+    .controles-title {
+      background: #13377c;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.10em;
+      padding: 9px 0 7px 16px;
+      border-radius: 7px 7px 0 0;
+      letter-spacing: 1px;
+      margin-bottom: 0;
+      box-shadow: 0 2px 4px #0001;
+    }
+    .lista-controles {
+      list-style: none;
+      margin: 0;
+      padding: 6px 8px 0 8px;
+    }
+    .control-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+      justify-content: space-between;
+    }
+    .control-nombre {
+      flex: 1;
+      font-size: 1em;
+      font-weight: 600;
+      color: #18346a;
+      margin-left: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .control-btns {
+      display: flex;
+      flex-direction: row;
+      gap: 2px;
+    }
+    .control-btn {
+      background: #e8e8e8;
+      border: none;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 1em;
+      cursor: pointer;
+      color: #13377c;
+      font-weight: bold;
+      transition: background 0.15s;
+    }
+    .control-btn:active {
+      background: #cfd8dc;
+    }
+    .control-btn[disabled] {
+      opacity: 0.42;
+      pointer-events: none;
+    }
+    @media (max-width: 900px) {
+      .layout-flex {
+        flex-direction: column;
+      }
+      #panel-candidatos {
+        margin: 0 auto;
+        width: 98vw;
+      }
+      #panel-controles {
+        position: static;
+        width: 98vw;
+        margin: 30px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout-flex">
+    <div id="panel-candidatos">
+      <ul class="lista-candidatos" id="listaCandidatos"></ul>
+    </div>
+    <div id="panel-controles">
+      <div class="controles-title">CONTROLES</div>
+      <ul class="lista-controles" id="listaControles"></ul>
+    </div>
+  </div>
+  <script>
+    // 9 candidatos demo
+    const candidatos = [
+      { id: 1, nombre: "Jeannette", apellido: "Jara", foto: "https://media-cdn.flowics.com/user-library-prod/v1/team/3539/68794a1edaed90319dbbe747/jara_crop.png" },
+      { id: 2, nombre: "Marco", apellido: "Enríquez-O", foto: "https://media-cdn.flowics.com/user-library-prod/v1/team/3539/68811095ef62ab04f0d44272/Meo_crop.png" },
+      { id: 3, nombre: "Johannes", apellido: "Kayser", foto: "https://media-cdn.flowics.com/user-library-prod/v1/team/3539/68794a21ef62ab04f0d42e64/kaiser_crop.png" },
+      { id: 4, nombre: "Eduardo", apellido: "Artés", foto: "https://media-cdn.flowics.com/user-library-prod/v1/team/3539/68811093daed90319dbbfd78/Artes_crop.png" },
+      { id: 5, nombre: "Franco", apellido: "Parisi", foto: "https://media-cdn.flowics.com/user-library-prod/v1/team/3539/68794a28fa781357fe505f36/parisi_crop.png" },
+      { id: 6, nombre: "Evelyn", apellido: "Matthei", foto: "https://media-cdn.flowics.com/user-library-prod/v1/team/3539/68794a25fa781357fe505f30/matthei_crop.png" },
+      { id: 7, nombre: "José Antonio", apellido: "Kast", foto: "https://media-cdn.flowics.com/user-library-prod/v1/team/3539/68794a23daed90319dbbe74a/kast_crop.png" },
+      { id: 8, nombre: "Harold", apellido: "Mayne-Nicholls", foto: "https://media-cdn.flowics.com/user-library-prod/v1/team/3539/68922962da735f78cef4b328/Harold_Mayne-Nicholls.png" },
+      { id: 9, nombre: "Vlado", apellido: "Mirosevic", foto: "https://media-cdn.flowics.com/user-library-prod/v1/team/3539/68922aca149c59335c80ecb7/Vlado_Mirosevic.png" }
+    ];
+
+    const DURACION = 3 * 60;
+    let estados = candidatos.map(c => ({
+      ...c,
+      tiempo: DURACION,
+      running: false,
+      interval: null,
+      everStarted: false
+    }));
+
+    // Animación de reordenamiento suave
+    function renderCandidatos() {
+      let ever = estados.filter(e => e.everStarted);
+      let never = estados.filter(e => !e.everStarted);
+      ever.sort((a, b) => b.tiempo - a.tiempo);
+      let nuevaOrden = ever.concat(never).map(e => e.id);
+
+      const lista = document.getElementById('listaCandidatos');
+      // DOM Move Animation
+      let items = {};
+      [...lista.children].forEach(child => {
+        items[child.id.replace('cand-','')] = child;
+      });
+
+      let prevPositions = {};
+      nuevaOrden.forEach(id => {
+        let el = items[id];
+        if (el) prevPositions[id] = el.getBoundingClientRect();
+      });
+
+      lista.innerHTML = nuevaOrden.map(id => {
+        let c = estados.find(x => x.id === id);
+        const pct = Math.max(0, Math.min(1, c.tiempo / DURACION));
+        return `
+        <li class="candidato" id="cand-${c.id}">
+          <img class="foto" src="${c.foto}" alt="${c.nombre}">
+          <div class="datos-candidato">
+            <div class="nombre-box">
+              <span class="nombre-apellido">
+                <span class="nombre">${c.nombre}</span>
+                <span class="apellido">${c.apellido}</span>
+              </span>
+            </div>
+            <div class="barra-tiempo-row">
+              <span class="display-tiempo" id="disp-${c.id}">${formatTiempo(c.tiempo)}</span>
+              <div class="barra-tiempo">
+                <div class="barra-azul" id="bar-azul-${c.id}" style="width:${pct*100}%"></div>
+                <div class="barra-gris" id="bar-gris-${c.id}" style="width:${(1-pct)*100}%"></div>
+              </div>
+            </div>
+          </div>
+        </li>
+        `;
+      }).join('');
+
+      // Animar movimientos solo si existen elementos previos
+      setTimeout(() => {
+        nuevaOrden.forEach((id) => {
+          let el = document.getElementById('cand-'+id);
+          if (!el || !prevPositions[id]) return;
+          let newPos = el.getBoundingClientRect();
+          let dy = prevPositions[id].top - newPos.top;
+          if (Math.abs(dy) > 0.5) {
+            el.style.transition = "none";
+            el.style.transform = `translateY(${dy}px)`;
+            el.offsetHeight;
+            el.classList.add('moving');
+            el.style.transition = "transform 0.7s cubic-bezier(.22,1,.36,1), box-shadow 0.3s";
+            el.style.transform = "";
+            setTimeout(() => {el.classList.remove('moving');}, 800);
+          }
+        });
+      }, 1); // Muy corto delay para asegurar DOM actualizado
+    }
+
+    function renderControles() {
+      const lista = document.getElementById('listaControles');
+      lista.innerHTML = estados.map(c => `
+        <li class="control-item">
+          <span class="control-nombre">${c.nombre} ${c.apellido}</span>
+          <span class="control-btns">
+            <button class="control-btn" onclick="pausarCandidato(${c.id})" ${!c.running ? "disabled" : ""} title="Pausar">&#10073;&#10073;</button>
+            <button class="control-btn" onclick="reanudarCandidato(${c.id})" ${c.running || c.tiempo===0 ? "disabled" : ""} title="Reanudar">&#9654;</button>
+            <button class="control-btn" onclick="resetearCandidato(${c.id})" ${c.tiempo===DURACION ? "disabled" : ""} title="Resetear">&#8634;</button>
+          </span>
+        </li>
+      `).join('');
+    }
+
+    function formatTiempo(segundos) {
+      let m = Math.floor(segundos/60).toString().padStart(2,"0");
+      let s = (segundos%60).toString().padStart(2,"0");
+      return `${m}:${s}`;
+    }
+
+    function actualizarVistaCrono(id) {
+      let c = estados.find(c => c.id === id);
+      if (!c) return;
+      document.getElementById('disp-'+id).textContent = formatTiempo(c.tiempo);
+      let pct = Math.max(0, Math.min(1, c.tiempo / DURACION));
+      document.getElementById('bar-azul-'+id).style.width = (pct*100) + "%";
+      document.getElementById('bar-gris-'+id).style.width = ((1-pct)*100) + "%";
+    }
+
+    window.reanudarCandidato = function(id) {
+      let c = estados.find(x=>x.id===id);
+      if (c.running || c.tiempo === 0) return;
+      c.everStarted = true;
+      c.running = true;
+      if (c.interval) clearInterval(c.interval);
+      // Corrección de tiempo: 1s cada 500ms
+      c.interval = setInterval(() => {
+        if (c.tiempo > 0) {
+          c.tiempo--;
+          actualizarVistaCrono(id);
+          renderCandidatos();
+          if (c.tiempo === 0) {
+            clearInterval(c.interval);
+            c.running = false;
+            renderControles();
+          }
+        }
+      }, 1000);
+      renderControles();
+      renderCandidatos();
+    };
+
+    window.pausarCandidato = function(id) {
+      let c = estados.find(x=>x.id===id);
+      if (!c.running) return;
+      clearInterval(c.interval);
+      c.running = false;
+      c.interval = null;
+      renderCandidatos();
+      renderControles();
+    };
+
+    window.resetearCandidato = function(id) {
+      let c = estados.find(x=>x.id===id);
+      if (c.interval) clearInterval(c.interval);
+      c.tiempo = DURACION;
+      c.running = false;
+      c.interval = null;
+      c.everStarted = false;
+      renderCandidatos();
+      renderControles();
+    };
+
+    // Inicializa
+    renderCandidatos();
+    renderControles();
+
+    // Actualización periódica de barras y tiempos (fluidez visual)
+    setInterval(() => {
+      for (let c of estados) {
+        if (c.running && c.tiempo > 0) {
+          actualizarVistaCrono(c.id);
+        }
+      }
+    }, 200);
+
+    // No hay setInterval global para descender tiempo, solo los individuales
+
+  </script>
+</body>
+</html>
